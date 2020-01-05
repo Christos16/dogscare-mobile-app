@@ -4,12 +4,12 @@ import MainNavigation from './navigation/MainNavigation';
 import SittersProfile from './screens/sitters/SittersProfile';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import sittersReducer from './store/reducers/sitters';
 import ReduxThunk from 'redux-thunk';
-import * as authActions from './store/actions/auth'
-import authReducer from './store/reducers/auth'
-import NavigationContainer from './navigation/NavigationContainer'
+import * as authActions from './store/actions/auth';
+import authReducer from './store/reducers/auth';
+import NavigationContainer from './navigation/NavigationContainer';
 
 const rootReducer = combineReducers({
   sitters: sittersReducer,
@@ -21,15 +21,14 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(ReduxThunk))
 );
 
-class App extends React.Component  {
-  
+class App extends React.Component {
   render() {
-  return (
-    <Provider store={store}>
-      <NavigationContainer />
-    </Provider>
-  );
-}
+    return (
+      <Provider store={store}>
+        <NavigationContainer />
+      </Provider>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

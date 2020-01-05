@@ -6,6 +6,7 @@ export const LOGIN = 'LOGIN';
 export const SET_USER = 'SET_USER';
 export const AUTHENTICATE = 'AUTHENTICATE';
 export const LOGOUT = 'LOGOUT';
+export const GET_BOOKING = 'GET_BOOKING';
 let timer;
 
 export const authenticate = (userId, token, expiryTime) => {
@@ -155,4 +156,118 @@ const saveToStorage = (token, userId, expirationDate) => {
       expiryDate: expirationDate.toISOString()
     })
   );
+};
+
+export const createProfile = (
+  token,
+  bio,
+  personality,
+  size,
+  breed,
+  location
+) => {
+  return async () => {
+    const response = await fetch(
+      'https://europe-west1-dogs-care.cloudfunctions.net/api/user',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          bio: bio,
+          personality: personality,
+          size: size,
+          breed: breed,
+          location: location
+        })
+      }
+    )
+      .then(res => res.json())
+      .then(res => {
+        console.log('response' + JSON.stringify(res));
+      })
+      .catch(e => console.log(e));
+  };
+  /*if (!response.ok) {
+      const errorResData = await response.json();
+      const errorMessage = errorResData.general;
+      let message = 'Something went wrong!';
+      if (errorMessage === 'Wrong credentials, please try again') {
+        message = 'Wrong credentials, please try again';
+      }
+      throw new Error(message);
+    }
+    const resData = await response.json();
+    console.log(resData);
+  }; */
+};
+
+export const uploadImage = imagePath => {
+  const photo = {
+    uri: imagePath,
+    name: 'image.jpg',
+    type: 'image/jpeg'
+  };
+  const data = new FormData();
+  data.append('file', photo);
+  const config = {
+    method: 'POST',
+    body: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  };
+  return fetch(
+    ' https://europe-west1-dogs-care.cloudfunctions.net/api/user/image',
+    config
+  );
+};
+
+export const getBooking = (token, handle) => {
+  return async dispatch => {
+    const response = await fetch(
+      `https://europe-west1-dogs-care.cloudfunctions.net/api/booking/${handle}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+      .then(res => res.json())
+      .then(res => {
+        dispatch({ type: GET_BOOKING, payload: res });
+      })
+
+      .catch(e => console.log(e.json()));
+  };
+};
+
+export const bookNow = (token, from, to, comment, sitterId) => {
+  return async () => {
+    const response = await fetch(
+      `https://europe-west1-dogs-care.cloudfunctions.net/api/sitter/${sitterId}/booking`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          from: from,
+          to: to,
+          comment: comment
+        })
+      }
+    )
+      .then(res => res.json())
+      .then(res => {
+        console.log('Success');
+        console.log('response' + JSON.stringify(res));
+      })
+      .catch(e => console.log('Problem, check again '));
+  };
 };

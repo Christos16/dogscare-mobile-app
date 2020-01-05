@@ -13,9 +13,6 @@ import HeaderButton from '../../components/layouts/HeaderButton';
 import { fetchSitters } from '../../store/actions/sitters';
 import CardBase from '../../components/Card/CardBase';
 
-
-
-
 import { Button } from 'native-base';
 
 const SittersProfile = props => {
@@ -23,7 +20,6 @@ const SittersProfile = props => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreching, setIsRefreching] = useState(false);
- 
 
   const sitterCount = sitters.length;
 
@@ -37,16 +33,12 @@ const SittersProfile = props => {
     setIsRefreching(false);
   }, [dispatch, setIsLoading]);
 
-
-
   useEffect(() => {
     setIsLoading(true);
     getSitters().then(() => {
       setIsLoading(false);
     });
   }, [dispatch, getSitters]);
-
-  
 
   if (isLoading) {
     return (
@@ -86,7 +78,6 @@ const SittersProfile = props => {
         data={sitters}
         keyExtractor={item => item.sitterId}
         renderItem={itemData => (
-         
           <CardBase
             bio={itemData.item.bio}
             image={itemData.item.image}
@@ -116,7 +107,6 @@ const SittersProfile = props => {
               <Text style={{ color: 'white' }}>Visit Profile</Text>
             </Button>
           </CardBase>
-          
         )}
       />
     </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { View, ScrollView, Image, StyleSheet } from 'react-native';
 import Colors from '../../common/Color';
 import {
@@ -24,6 +24,8 @@ import { Ionicons } from '@expo/vector-icons';
 import FooterContainer from '../../common/Footer';
 import * as sitterActions from '../../store/actions/sitters';
 import Ratings from '../../common/Stars';
+import HeaderButton from '../../components/layouts/HeaderButton';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 const SitterDetails = props => {
   const dispatch = useDispatch();
@@ -33,12 +35,22 @@ const SitterDetails = props => {
     state.sitters.sittersProfile.find(sitter => sitter.sitterId === sitterId)
   );
 
-  const bookSitter = (id, handle) => {
-    props.navigation.navigate('Booking', {
-      sitterId: id,
-      sitterHandle: handle
-    });
-  };
+  const bookSitter = useCallback(async () => {
+    try {
+      await props.navigation.navigate('Booking', {
+        sitterId: selectedSitter.sitterId,
+        sitterHandle: selectedSitter.sitterHandle,
+        sitterImage: selectedSitter.sitterImage
+      });
+    } catch (err) {
+      console.log(err.toString());
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    props.navigation.setParams({ booking: bookSitter });
+  }, [bookSitter]);
+
   return (
     <ScrollView>
       <Container>
@@ -131,7 +143,11 @@ const SitterDetails = props => {
             color={Colors.primary}
             title={`Book ${selectedSitter.sitterHandle} now !`}
             onPress={() => {
-              bookSitter(selectedSitter.sitterHandle, selectedSitter.sitterId);
+              bookSitter(
+                selectedSitter.sitterId,
+                selectedSitter.sitterHandle,
+                selectedSitter.image
+              );
             }}
           >
             <Text>Book Sitter</Text>
@@ -143,8 +159,22 @@ const SitterDetails = props => {
 };
 
 SitterDetails.navigationOptions = navData => {
+  const bookFn = navData.navigation.getParam('booking');
   return {
-    headerTitle: navData.navigation.getParam('sitterHandle')
+    headerTitle: navData.navigation.getParam('sitterHandle'),
+    headerRight: (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title='Save'
+          iconName={
+            Platform.OS === 'android'
+              ? 'md-checkbox-outline'
+              : 'ios-checkbox-outline'
+          }
+          onPress={bookFn}
+        />
+      </HeaderButtons>
+    )
   };
 };
 

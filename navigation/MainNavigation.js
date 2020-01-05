@@ -14,6 +14,8 @@ import * as authActions from '../store/actions/auth';
 import BookingSitter from '../screens/sitters/BookingSitter';
 import ProfileScreen from '../screens/user/Profile';
 import { Icon } from 'native-base';
+import CustomDrawerContentComponent from '../components/layouts/CustomDrawer';
+import History from '../screens/user/History';
 
 const defaultNavOptions = {
   headerStyle: {
@@ -42,11 +44,24 @@ const ProfileNavigator = createStackNavigator(
   {
     Profile: ProfileScreen
   },
-
   {
     navigationOptions: {
       drawerIcon: drawerConfig => (
-        <Icon name='contact' size={23} color={drawerConfig.tintColor} />
+        <Icon name='contact' size={23} color={drawerConfig.headerTintColor} />
+      )
+    },
+    defaultNavigationOptions: defaultNavOptions
+  }
+);
+
+const BookingNavigator = createStackNavigator(
+  {
+    Bookings: History
+  },
+  {
+    navigationOptions: {
+      drawerIcon: drawerConfig => (
+        <Icon name='clipboard' size={23} color={drawerConfig.headerTintColor} />
       )
     },
     defaultNavigationOptions: defaultNavOptions
@@ -56,28 +71,14 @@ const ProfileNavigator = createStackNavigator(
 const MainNavigation = createDrawerNavigator(
   {
     Home: SitterNavigator,
-    Profile: ProfileNavigator
+    Profile: ProfileNavigator,
+    Bookings: BookingNavigator
   },
   {
+    contentComponent: CustomDrawerContentComponent,
     contentOptions: {
-      activeTintColor: 'purple'
-    },
-    contentComponent: props => {
-      const dispatch = useDispatch();
-      return (
-        <View style={{ flex: 1, paddingTop: 20 }}>
-          <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
-            <DrawerItems {...props} />
-            <Button
-              title='Logout'
-              color='red'
-              onPress={() => {
-                dispatch(authActions.logout());
-              }}
-            />
-          </SafeAreaView>
-        </View>
-      );
+      activeTintColor: '#000000',
+      activeBackgroundColor: '#e6e6e6'
     }
   }
 );
